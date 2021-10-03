@@ -1,9 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 import sqlite3
-
 conn = sqlite3.connect('rajgyms.db')
-
 showPack, showCust = False, False
 container = ''
 class GymApp(tk.Tk):
@@ -16,14 +14,10 @@ class GymApp(tk.Tk):
         l1 = tk.Label(self, text = 'Welcome to Raj Gym Centers', font=("Courier", 28, "bold"), bg='#4834DF').pack()
         container = tk.Frame(self, bg='#EAF0F1')
         container.pack(side="top", fill="both", expand = True, pady=10)
-
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
-
         self.frames = {}
-
         for F in (Login, Menu, AddCustomer, AddPackage, ShowCustomers, ShowPackages, SearchCustomer, AddSubscription, AddPayment):
-
             print(F)
             f = str(F)
             if f == "<class '__main__.ShowPackages'>" or f == "<class '__main__.ShowCustomers'>":
@@ -40,23 +34,19 @@ class GymApp(tk.Tk):
                 print(frame)
                 self.frames[F] = frame
                 frame.grid(row=0, column=0, sticky="nsew")
-
         self.show_frame(Login)
-
     def show_pack(self):
         print('Inside ShowPack')
         frame = ShowPackages(container, self)
         print(frame)
         self.frames[ShowPackages] = frame
         frame.grid(row=0, column=0, sticky="nsew")
-
     def show_cust(self):
         print('Inside ShowCust')
         frame = ShowCustomers(container, self)
         print(frame)
         self.frames[ShowCustomers] = frame
         frame.grid(row=0, column=0, sticky="nsew")
-
     def show_frame(self, cont):
         global showPack
         cont1 = str(cont)
@@ -70,9 +60,7 @@ class GymApp(tk.Tk):
             self.show_cust()
         frame = self.frames[cont]
         frame.tkraise()
-
 class Login(tk.Frame):
-
     def __init__(self, parent, controller):
         self.controller = controller
         tk.Frame.__init__(self,parent)
@@ -87,18 +75,17 @@ class Login(tk.Frame):
         e2.pack()
         e2.config(show="*")
         b1 = tk.Button(self, text = 'Login', relief='raised', font=("Times", 18), width=10, command=self.authenticate).pack(pady=50)
-
     def authenticate(self):
         global conn
         flag = 0
         cur = conn.cursor()
-        query = '''select * from managers'''
-        cur.execute(query)
+        cur.execute("SELECT * FROM managers")
+
         r = cur.fetchall()
         for row in r:
             if self.ev1.get() == row[0] and self.ev2.get() == row[1]:
                 print("Login Successful!")
-                messagebox.showinfo('Login Successful', 'Welcome to Raj Gym Management System!!')
+                messagebox.showinfo('Login Successful', 'Welcome to RDX Gym Management System!!')
                 flag = 1
                 conn.commit()
                 cur.close()
@@ -108,10 +95,7 @@ class Login(tk.Frame):
             messagebox.askretrycancel('Login Failed', 'Error Authenticating, Please Try Again!!')
         conn.commit()
         cur.close()
-
-
 class Menu(tk.Frame):
-
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.configure(bg='#4834DF')
@@ -123,10 +107,7 @@ class Menu(tk.Frame):
         b5 = tk.Button(self, text = 'Search Customer', relief='raised', font=("Times", 18), width=20, command=lambda: controller.show_frame(SearchCustomer)).pack(pady=4)
         b6 = tk.Button(self, text = 'Add Subscription', relief='raised', font=("Times", 18), width=20, command=lambda: controller.show_frame(AddSubscription)).pack(pady=4)
         b7 = tk.Button(self, text = 'Add Payment', relief='raised', font=("Times", 18), width=20, command=lambda: controller.show_frame(AddPayment)).pack(pady=4)
-
-
 class AddCustomer(tk.Frame):
-
     def __init__(self, parent, controller):
         self.controller = controller
         tk.Frame.__init__(self, parent)
@@ -144,7 +125,6 @@ class AddCustomer(tk.Frame):
         b2 = tk.Button(self, text = 'Menu', relief='raised', font=("Times", 18), width=10, command=lambda: controller.show_frame(Menu)).pack(pady=12)
         self.text = tk.StringVar(value = '')
         success = tk.Label(self, text = '', font=("Helvetica", 10, "italic"), bg='#4834DF', textvariable = self.text).pack(pady=6, padx=10)
-
     def addCustomer(self):
         global conn
         cur = conn.cursor()
@@ -169,9 +149,7 @@ class AddCustomer(tk.Frame):
             self.text.set("New Customer Added!!")
             conn.commit()
             cur.close()
-
 class AddPackage(tk.Frame):
-
     def __init__(self, parent, controller):
         self.controller = controller
         tk.Frame.__init__(self, parent)
@@ -189,7 +167,6 @@ class AddPackage(tk.Frame):
         b2 = tk.Button(self, text = 'Menu', relief='raised', font=("Times", 18), width=10, command=lambda: controller.show_frame(Menu)).pack(pady=12)
         self.text = tk.StringVar(value = '')
         success = tk.Label(self, text = '', font=("Helvetica", 10, "italic"), bg='#4834DF', textvariable = self.text).pack(pady=6, padx=10)
-
     def addPackage(self):
         global conn
         cur = conn.cursor()
@@ -214,27 +191,22 @@ class AddPackage(tk.Frame):
             self.text.set("New Package Added!!")
             conn.commit()
             cur.close()
-
 class ShowCustomers(tk.Frame):
-
     def __init__(self, parent, controller):
         self.controller = controller
         tk.Frame.__init__(self, parent)
         self.configure(bg='#4834DF')
         label = tk.Label(self, text = 'List of Customers', font=("Helvetica", 30, "italic"), bg='#4834DF').pack(padx=10)
-
         list1 = tk.Listbox(self, height=8, width=160, selectmode='multiple', font=("Times", 28), bd = 6, relief='raised', bg='#1BCA9B', fg='#2C3335')
         list1.pack(padx=25, pady=16)
         b2 = tk.Button(self, text = 'Menu', relief='raised', font=("Times", 18), width=10, command=lambda: controller.show_frame(Menu)).pack()
         b3 = tk.Button(self, text = 'Delete', relief='raised', font=("Times", 18), width=10, command=lambda:self.deleteCustomers(list1)).pack(pady=8)
         self.view_command(list1)
-
     def __str__(self):
         return 'ShowCustomers'
-
     def showCustomers(self):
         global conn
-        conn = sqlite3.connect('rdxgyms.db')
+        conn = sqlite3.connect('rajgyms.db')
         cur = conn.cursor()
         query = '''select * from customers'''
         cur.execute(query)
@@ -247,12 +219,10 @@ class ShowCustomers(tk.Frame):
             return r
         else:
             messagebox.showinfo("List of Customers", "No customer records found.")
-
     def view_command(self, list1):
         list1.delete(0,tk.END)
         for row in self.showCustomers():
             list1.insert(tk.END,row)
-
     def deleteCustomers(self, list1):
         sel = list1.curselection()
         cur = conn.cursor()
@@ -268,24 +238,19 @@ class ShowCustomers(tk.Frame):
         cur.close()
         for index in sel[::-1]:
             list1.delete(index)
-
 class ShowPackages(tk.Frame):
-
     def __init__(self, parent, controller):
         self.controller = controller
         tk.Frame.__init__(self, parent)
         self.configure(bg='#4834DF')
         label = tk.Label(self, text = 'List of Packages', font=("Helvetica", 30, "italic"), bg='#4834DF').pack(padx=10)
-
         list1 = tk.Listbox(self, height=8, width=160, selectmode='multiple', font=("Times", 28), bd = 6, relief='raised', bg='#1BCA9B', fg='#2C3335')
         list1.pack(padx=25, pady=16)
         b2 = tk.Button(self, text = 'Menu', relief='raised', font=("Times", 18), width=10, command=lambda: controller.show_frame(Menu)).pack()
         b3 = tk.Button(self, text = 'Delete', relief='raised', font=("Times", 18), width=10, command=lambda:self.deletePackages(list1)).pack(pady=8)
         self.view_command(list1)
-
     def __str__(self):
         return 'ShowPackages'
-
     def showPackages(self):
         global conn
         conn = sqlite3.connect('rajgyms.db')
@@ -299,12 +264,10 @@ class ShowPackages(tk.Frame):
             return r
         else:
             messagebox.showinfo("List of Packages", "No package records found.")
-
     def view_command(self, list1):
         list1.delete(0,tk.END)
         for row in self.showPackages():
             list1.insert(tk.END,row)
-
     def deletePackages(self, list1):
         sel = list1.curselection()
         cur = conn.cursor()
@@ -320,9 +283,7 @@ class ShowPackages(tk.Frame):
         cur.close()
         for index in sel[::-1]:
             list1.delete(index)
-
 class SearchCustomer(tk.Frame):
-
     def __init__(self, parent, controller):
         self.controller = controller
         tk.Frame.__init__(self, parent)
@@ -334,7 +295,6 @@ class SearchCustomer(tk.Frame):
         list1.pack(padx=25, pady=8)
         b1 = tk.Button(self, text = 'Search', relief='raised', font=("Times", 18), width=10, command=lambda: self.view_command(list1)).pack(pady=10)
         b2 = tk.Button(self, text = 'Menu', relief='raised', font=("Times", 18), width=10, command=lambda: controller.show_frame(Menu)).pack(pady=10)
-
     def searchCustomer(self):
         global conn
         cur = conn.cursor()
@@ -354,14 +314,11 @@ class SearchCustomer(tk.Frame):
                 conn.commit()
                 cur.close()
                 return r2
-
     def view_command(self, list1):
         list1.delete(0,tk.END)
         for row in self.searchCustomer():
             list1.insert(tk.END,row)
-
 class AddSubscription(tk.Frame):
-
     def __init__(self, parent, controller):
         self.controller = controller
         tk.Frame.__init__(self, parent)
@@ -380,7 +337,6 @@ class AddSubscription(tk.Frame):
         b2 = tk.Button(self, text = 'Menu', relief='raised', font=("Times", 18), width=10, command=lambda: controller.show_frame(Menu)).pack(pady=8)
         self.text = tk.StringVar(value = '')
         success = tk.Label(self, text = '', font=("Helvetica", 10, "italic"), bg='#4834DF', textvariable = self.text).pack(pady=6, padx=10)
-
     def addSubscription(self):
         global conn
         cur = conn.cursor()
@@ -388,7 +344,6 @@ class AddSubscription(tk.Frame):
         cur.execute(q1, (self.custName.get(),))
         r1 = cur.fetchall()
         q2 = '''select * from packages where packageID = ?'''
-
         if not self.subsID.get().isdigit():
             return messagebox.showwarning('Add Subscription', 'Please enter valid subscription ID!')
         elif len(r1) == 0:
@@ -414,9 +369,7 @@ class AddSubscription(tk.Frame):
             self.text.set("New Subscription Added!!")
             conn.commit()
             cur.close()
-
 class AddPayment(tk.Frame):
-
     def __init__(self, parent, controller):
         self.controller = controller
         tk.Frame.__init__(self, parent)
@@ -432,7 +385,6 @@ class AddPayment(tk.Frame):
         b2 = tk.Button(self, text = 'Menu', relief='raised', font=("Times", 18), width=10, command=lambda: controller.show_frame(Menu)).pack(pady=10)
         self.text = tk.StringVar(value = '')
         success = tk.Label(self, text = '', font=("Helvetica", 10, "italic"), bg='#4834DF', textvariable = self.text).pack(pady=4, padx=16)
-
     def addPayment(self):
         global conn
         cur = conn.cursor()
@@ -464,8 +416,6 @@ class AddPayment(tk.Frame):
                 conn.commit()
                 cur.close()
                 return self.invoice.set('Payment ID : {}\nCustomer Name : {}\nBill Amount : ₹ {}'.format(int(self.payID.get()), self.custName.get(), bill))
-
-
 app = GymApp()
 app.mainloop()
 conn.close()
