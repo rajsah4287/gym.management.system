@@ -1,2 +1,7 @@
-password(raj123)
-username(rajsah)
+"""
+This module tests username and password from login page by using pytest.
+"""
+import pytest
+@pytest.mark.paramrtrize("Username,password",[("admin","admin"),("admin",RAJ")])
+def test_method(username,password):
+assert username == password

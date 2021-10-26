@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 import sqlite3
-conn = sqlite3.connect('rajgyms.db')
+conn = sqlite3.connect('')
 showPack, showCust = False, False
 container = ''
 class GymApp(tk.Tk):
